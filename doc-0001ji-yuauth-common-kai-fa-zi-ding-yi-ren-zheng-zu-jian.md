@@ -9,5 +9,5 @@
 
 ## 1. 基础知识
 
-　　提到系统中认证授权的用法，通常就会想到RBAC（Role-Based Access Control）模型，该模型解决了系统中的
+提到系统中认证授权的用法，通常就会想到RBAC（Role-Based Access Control）模型，该模型
 
