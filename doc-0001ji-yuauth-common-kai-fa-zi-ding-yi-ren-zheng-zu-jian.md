@@ -4,7 +4,7 @@
 
 * 分析vertx-auth-common项目接口
 * 以vertx-auth-oauth2为例分析项目实现方式
-* 开发自定义的完整独立的认证/授权模块
+* 开发自定义的完整独立认证/授权模块
 * 开发以vertx-grpc为基础的认证服务器（微服务架构可用）
 
 ## 1. 分析vertx-auth-common项目
