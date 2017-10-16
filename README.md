@@ -1,2 +1,4 @@
-# vertx-article
+# Vert.x Articles
+
 Vertx Articles
+
