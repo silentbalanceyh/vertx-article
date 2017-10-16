@@ -7,13 +7,21 @@
 * 开发自定义的完整独立认证/授权模块
 * 开发以vertx-grpc为基础的认证服务器（微服务架构可用）
 
-## 1. 基础知识
+## 1. 楔子
 
 提到系统中认证授权，通常就会想到RBAC（Role-Based Access Control）模型，该模型实际上描述了一个问题：Who, What, How——“Who对What进行了How的操作。”
 
 * Who：权限拥有者（如Role、User、Group、Principal等）
 * What：权限作用的主体对象，一般称为资源（Resource）
 * How：具体的权限（Privilege）
+
+本文不详细介绍该模型，细节参考：[https://en.wikipedia.org/wiki/Role-based\_access\_control](https://en.wikipedia.org/wiki/Role-based_access_control)
+
+
+
+
+
+
 
 
 
