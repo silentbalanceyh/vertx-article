@@ -11,3 +11,7 @@
 
 提到系统中认证授权，通常就会想到RBAC（Role-Based Access Control）模型，该模型实际上描述了一个问题：Who, What, How——“Who对What进行了How的操作。”
 
+* Who：权限拥有者（如Role、User、Group、Principal等）
+* 
+
+
