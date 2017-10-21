@@ -42,5 +42,5 @@ router.route("/private/*").handler(basicAuthHandler);
 
 ### 2.1.关于Handler的写法
 
-
+由于Vert.x中的在Router处理Handler的过程中通常示例都是使用的lambda表达式，
 
