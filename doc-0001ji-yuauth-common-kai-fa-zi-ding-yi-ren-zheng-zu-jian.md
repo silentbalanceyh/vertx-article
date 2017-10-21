@@ -32,5 +32,5 @@ AuthHandler basicAuthHandler = BasicAuthHandler.create(authProvider);
 router.route("/private/*").handler(basicAuthHandler);
 ```
 
-
+如果上述代码第一次出现在你眼前，可能只是一个简单的代码段，
 
