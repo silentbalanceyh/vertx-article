@@ -30,8 +30,7 @@ AuthHandler basicAuthHandler = BasicAuthHandler.create(authProvider);
 
 // All requests to paths starting with '/private/' will be protected
 router.route("/private/*").handler(basicAuthHandler);
-
 ```
 
-
+上述代码段很简单，在构造带“认证”功能的Handler时，Vert.x定义了一个Provider组件，
 
