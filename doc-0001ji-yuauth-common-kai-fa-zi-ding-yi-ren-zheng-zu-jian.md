@@ -15,7 +15,5 @@
 * What：权限作用的主体对象，一般称为资源（Resource）
 * How：具体的权限（Privilege）
 
-本文不详细介绍该模型，细节参考：[https://en.wikipedia.org/wiki/Role-based\_access\_control](https://en.wikipedia.org/wiki/Role-based_access_control)，而本文主要对Vert.x中的认证授权部分进行详细介绍，尽可能分享在实际项目中用来处理认证授权部分的相关信息。
-
-
+本文不详细介绍该模型，细节参考：[https://en.wikipedia.org/wiki/Role-based\_access\_control](https://en.wikipedia.org/wiki/Role-based_access_control)，而本文主要对Vert.x中的认证授权部分进行详细介绍，尽可能分享在实际项目中用来处理认证授权部分的相关信息。Vert.x中处理认证和授权主要包含了七个项目：
 
