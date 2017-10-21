@@ -40,3 +40,7 @@ router.route("/private/*").handler(basicAuthHandler);
 
 上述代码段中，使用了`BasicAuthHandler`去创建了一个Handler组件，通过它创建的Handler组件和通常我们使用Lambda表达式直接写的组件区别就在于引入了认证过程中的Provider接口，所以在路由内的代码执行流程中，Provider实现组件的逻辑会被触发，而Provider实现组件的逻辑就是开发人员需要真正关注的地方。
 
+### 2.1.关于Handler的写法
+
+
+
