@@ -9,7 +9,7 @@
 
 ## 术语表
 
-* Handler：用于表达Vert.x Web中Router注册的Handler组件，该组件通常实现了接口Handler&lt;RoutingContext&gt;。
+* Handler：用于表达Vert.x Web中Router注册的Handler组件，该组件通常实现了接口`Handler<RoutingContext>`。
 
 ## 1. 楔子
 
