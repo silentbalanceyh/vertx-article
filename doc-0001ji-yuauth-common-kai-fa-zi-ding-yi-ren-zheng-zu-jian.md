@@ -36,6 +36,7 @@ router.route("/private/*").handler(basicAuthHandler);
 
 * `io.vertx.ext.auth.User`：被认证的实体，包含了认证授权中该实体包含的所有数据信息。
 * `io.vertx.ext.auth.AuthProvider`：认证专用接口。
+* `io.vertx.ext.auth.AbstractUser`：实现了User接口的抽象类，抽象类的主体逻辑实现了简单的权限缓存和基本权限处理。
 
 
 
