@@ -38,5 +38,5 @@ router.route("/private/*").handler(basicAuthHandler);
 * `io.vertx.ext.auth.AuthProvider`：认证专用接口。
 * `io.vertx.ext.auth.AbstractUser`：实现了User接口的抽象类，抽象类的主体逻辑实现了简单的权限缓存和基本权限处理。
 
-上述代码段中，实际上使用了`BasicAuthHandler`去创建了一个Handler组件，通过它创建的Handler组件和通常我们使用Lambda表达式直接写的组件区别就在于引入了认证过程中的Provider接口，所以在路由内的代码执行流程中，Provider实现组件的逻辑会被触发，而Provider实现组件的逻辑就是开发人员需要真正关注的地方。
+上述代码段中，使用了`BasicAuthHandler`去创建了一个Handler组件，通过它创建的Handler组件和通常我们使用Lambda表达式直接写的组件区别就在于引入了认证过程中的Provider接口，所以在路由内的代码执行流程中，Provider实现组件的逻辑会被触发，而Provider实现组件的逻辑就是开发人员需要真正关注的地方。
 
