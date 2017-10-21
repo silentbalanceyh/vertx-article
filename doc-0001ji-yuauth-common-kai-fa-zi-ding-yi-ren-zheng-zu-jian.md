@@ -17,5 +17,9 @@
 
 本文不详细介绍该模型，细节参考：[https://en.wikipedia.org/wiki/Role-based\_access\_control](https://en.wikipedia.org/wiki/Role-based_access_control)，而本文主要对Vert.x中的认证授权部分进行详细介绍，尽可能分享在实际项目中用来处理认证授权部分的相关信息，官方地址：[http://vertx.io/docs/\#authentication\_and\_authorisation](http://vertx.io/docs/#authentication_and_authorisation)。
 
+## 2. vertx-auth-common
+
+Vert.x中主要包含了七个项目来处理认证授权的任务，而实际上最核心的项目是vertx-auth-common，因为它是
+
 
 
