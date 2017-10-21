@@ -19,5 +19,5 @@
 
 ## 2. vertx-auth-common
 
-Vert.x中主要包含了七个项目来处理认证授权的任务，实际上vertx-auth-common项目是比较核心的一个项目，主要是因为它定义了Vert.x中认证和授权的基本接口。
+Vert.x中主要包含了七个项目来处理认证授权的任务，vertx-auth-common是Vert.x中认证和授权的基本定义。
 
