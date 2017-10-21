@@ -23,5 +23,7 @@
 
 ## 2. vertx-auth-common
 
-Vert.x中主要包含了七个项目来处理认证授权的任务，vertx-auth-common是Vert.x中认证和授权的接口定义。在分析该项目之前，看看官方项目中Vert.x Web如何设置认证的Handler的。
+Vert.x中主要包含了七个项目来处理认证授权的任务，vertx-auth-common是Vert.x中认证和授权的接口定义。在分析该项目之前，看看官方项目中Vert.x Web如何设置认证专用的Handler的。
+
+
 
