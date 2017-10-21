@@ -7,6 +7,10 @@
 * 开发自定义的完整独立认证/授权模块
 * 开发以vertx-grpc为基础的认证服务器（微服务架构可用）
 
+## 术语表
+
+* Handler：用于表达Vert.x Web中Router注册的Handler组件，该组件通常实现了接口Handler&lt;RoutingContext&gt;。
+
 ## 1. 楔子
 
 提到系统中认证授权，通常就会想到RBAC（Role-Based Access Control）模型，该模型实际上描述了一个问题：Who, What, How——“Who对What进行了How的操作。”
