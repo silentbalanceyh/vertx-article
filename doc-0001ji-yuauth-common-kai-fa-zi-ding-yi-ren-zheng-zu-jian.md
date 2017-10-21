@@ -17,11 +17,5 @@
 
 本文不详细介绍该模型，细节参考：[https://en.wikipedia.org/wiki/Role-based\_access\_control](https://en.wikipedia.org/wiki/Role-based_access_control)
 
-
-
-
-
-
-
-
+本文主要对Vert.x中的认证授权部分进行详细介绍
 
