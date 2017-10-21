@@ -32,5 +32,5 @@ AuthHandler basicAuthHandler = BasicAuthHandler.create(authProvider);
 router.route("/private/*").handler(basicAuthHandler);
 ```
 
-如果上述代码第一次出现在你眼前，可能对于初学者有点不容易理解，那么本章节的目的就是解决初学者在Vert.x认证和授权过程中的困惑。Vert.x中对于认证和授权部分定义了几个核心接口，这些接口可以让开发人员创建属于自己的认证、授权逻辑。
+如果上述代码第一次出现在你眼前，可能对于初学者有点不容易理解，那么本章节的目的就是解决初学者在Vert.x认证和授权过程中的困惑。Vert.x中对于认证和授权部分定义了几个核心接口，这些接口可以让开发人员创建属于自己的认证、授权逻辑，分析vertx-auth-common的过程先让我们了解Vert.x中认证授权基本结构，随后分析实现时再来看内置的细节。
 
