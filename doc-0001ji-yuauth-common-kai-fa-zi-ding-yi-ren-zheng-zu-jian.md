@@ -32,5 +32,5 @@ AuthHandler basicAuthHandler = BasicAuthHandler.create(authProvider);
 router.route("/private/*").handler(basicAuthHandler);
 ```
 
-如果上述代码第一次出现在你眼前，可能只是一个简单的代码段，
+如果上述代码第一次出现在你眼前，可能对于初学者有点不容易理解，那么本章节的目的就是解决初学者在Vert.x认证和授权过程中的困惑。
 
