@@ -74,11 +74,5 @@ router.route("/api/*").handler(context -> {
 });
 ```
 
-上述代码实际上是一段伪代码，但它表示这样一段逻辑：在启动时，构造一个`Metadata`对象（称为元数据对象），并设置路由；在执行请求时，会调用meta的`isSecure`方法，它的返回结果会影响请求的执行流程。实际上代码主体和lambda本身的逻辑在Vert.x并**不是同时执行**的。
-
-```java
-Metadata meta = new Metadata();
-```
-
-上边是构造了Metadata对象
+上述代码实际上是一段伪代码，但它表示这样一段逻辑：在启动时，构造一个`Metadata`对象（称为元数据对象），并设置路由；在执行请求时，会调用meta的`isSecure`方法，它的返回结果会影响请求的执行流程。
 
