@@ -30,10 +30,12 @@
             Handler<AsyncResult<Boolean>> authHandler = (res) -> {
                 if (res.succeeded()) {
                     if (((Boolean)res.result()).booleanValue()) {
+                        // 为空，则授权用户增加，使用AtomicInteger执行统计是因为多个线程共享，参考并发编程
                         if (count.incrementAndGet() == requiredcount) {
                             handler.handle(Future.succeededFuture());
                         }
                     } else if (sentFailure.compareAndSet(false, true)) {
+                        // 出现异常，则抛出403的FORBIDDEN异常
                         handler.handle(Future.failedFuture(FORBIDDEN));
                     }
                 } else {
@@ -41,6 +43,7 @@
                 }
 
             };
+            // 遍历每一个权限信息（authorities中存储了）
             Iterator var7 = this.authorities.iterator();
 
             while(var7.hasNext()) {
