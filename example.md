@@ -19,7 +19,7 @@
                 this.authorizeUser(ctx, user);
             } else {
                 /**
-                 * 
+                 * 无法读取User信息，一般是第一次请求
                  **/
                 this.parseCredentials(ctx, (res) -> {
                     if (res.failed()) {
