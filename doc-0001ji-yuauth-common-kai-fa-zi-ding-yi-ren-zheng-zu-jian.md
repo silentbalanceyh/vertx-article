@@ -64,7 +64,7 @@ _（1）直接使用lambda表达式：_
 Metadata meta = new Metadata();
 router.route("/api/*").handler(context -> {
     // 执行固定逻辑
-    boolean isSecure = meta.is();
+    boolean isSecure = meta.isSecure();
     if(isSecure){
         // 执行额外逻辑
         // ......
