@@ -88,7 +88,7 @@ Metadata meta = new Metadata();
 
 上边代码是执行`Metadata`对象的isSecure方法，位于lambda表达式内部，它是在请求触发时被调用——在Vert.x的Verticle组件执行deploy过程中，这段代码并不会执行（不仅这段，Handler内部代码都不会被执行），理解透这两个生命周期过后，就可以对上边代码进行改写了。
 
-_（2）使用Handler分离定义_
+_（2）使用Handler定义_
 
 将上述代码改写成下边这种模式：定义一个额外的类，`MetaHandler`用来创建Handler，并将`Metadata`对象的引用传给它。
 
