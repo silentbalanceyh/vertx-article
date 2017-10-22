@@ -24,13 +24,14 @@
                  * 被解析的值格式一般是：Authorization: Type XXXXXX，这里的Type只能是下边的值：
                  * Basic, Digest, Bearer, HOBA, Mutual, Negotiate, OAuth, SCRAM-SHA-1, SCRAM-SHA-256
                  * 一般这个方法会被重写，不同类型的值解析逻辑会不同，BasicAuthHandlerImpl中的
-                 * parseCredentials方法就被重写过，主要用于解析Basic中的头信息，解析成功过后
-                 * 会创建User对象，并将该对象填充到RoutingContext中。
+                 * parseCredentials方法就被重写过，主要用于解析Basic中的头信息。
                  **/
                 this.parseCredentials(ctx, (res) -> {
                     if (res.failed()) {
+                        // 解析失败，直接报错
                         this.processException(ctx, res.cause());
                     } else {
+                        // 解析成功，执行二次逻辑
                         User updatedUser = ctx.user();
                         if (updatedUser != null) {
                             Session session = ctx.session();
