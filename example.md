@@ -26,7 +26,7 @@
             }
             AtomicInteger count = new AtomicInteger();
             AtomicBoolean sentFailure = new AtomicBoolean();
-            // 执行一部授权检查
+            // 执行一部授权检查，定义authHandler对象
             Handler<AsyncResult<Boolean>> authHandler = (res) -> {
                 if (res.succeeded()) {
                     if (((Boolean)res.result()).booleanValue()) {
