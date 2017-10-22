@@ -32,17 +32,13 @@ AuthHandler basicAuthHandler = BasicAuthHandler.create(authProvider);
 router.route("/private/*").handler(basicAuthHandler);
 ```
 
-如果上述代码第一次出现在你眼前，可能对于初学者有点不容易理解，那么本章节的目的就是解决初学者在Vert.x认证和授权过程中的困惑。Vert.x中对于认证和授权部分定义了几个核心接口，这些接口可以让开发人员创建属于自己的认证、授权逻辑。vertx-auth-common中的几个核心接口（包括抽象类）如下：
+如果上述代码第一次出现在你眼前，可能对于初学者有点不容易理解，那么本章节的目的就是解决初学者在Vert.x认证和授权过程中的困惑。Vert.x中对于认证和授权部分定义了几个核心接口，这些接口可以让开发人员创建属于自己的认证、授权逻辑。上述代码段中，使用了`BasicAuthHandler`去创建了一个Handler组件，通过它创建的Handler组件和通常我们使用lambda表达式直接写的组件区别就在于引入了认证过程中的Provider接口，所以在路由内的代码执行流程中，Provider实现组件的逻辑会被触发，而Provider实现组件的逻辑就是开发人员需要真正关注的地方。vertx-auth-common中的几个核心接口（包括抽象类）如下：
 
 * `io.vertx.ext.auth.User`：被认证的实体，包含了认证授权中该实体包含的所有数据信息。
 * `io.vertx.ext.auth.AuthProvider`：认证专用接口。
 * `io.vertx.ext.auth.AbstractUser`：实现了User接口的抽象类，抽象类的主体逻辑实现了简单的权限缓存和基本权限处理。
 
-上述代码段中，使用了`BasicAuthHandler`去创建了一个Handler组件，通过它创建的Handler组件和通常我们使用lambda表达式直接写的组件区别就在于引入了认证过程中的Provider接口，所以在路由内的代码执行流程中，Provider实现组件的逻辑会被触发，而Provider实现组件的逻辑就是开发人员需要真正关注的地方。
-
 **关于Handler的写法的思考**
 
 由于Vert.x中的在Router处理Handler的过程中通常示例都是使用的lambda表达式的写法，很容易养成了一种固定写法的习惯，那么在了解`BasicAuthHandler`之前先看看Handler的两种写法。
-
-
 
