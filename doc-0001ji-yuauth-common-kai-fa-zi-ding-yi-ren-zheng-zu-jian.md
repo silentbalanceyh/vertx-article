@@ -130,7 +130,7 @@ public class MetaHandler implements Handler<RoutingContext>{
 
 看看上边从读者最熟悉的lambda写法到Handler定义的改写，是不是就很清楚了`BasicAuthHandler`那段代码的作用了，它和第二种的主代码逻辑是一致的。
 
-### 2.2. `BasicAuthHandler`背后的逻辑
+### 2.2. `BasicAuthHandler`背后的结构
 
 Vert.x中的`BasicAuthHandler`远比上边的Handler定义部分复杂，接下来部分的内容对于实现自定义的认证授权很有帮助，但由于是分析Vert.x中的源代码，难免有些觉得枯燥。Vert.x中的`BasicAuthHandler`的代码定义如下：
 
