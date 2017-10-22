@@ -14,5 +14,21 @@ public interface BasicAuthHandler extends AuthHandler {
 }
 ```
 
+实际上在调用`BasicAuthHandler`的create方法时，返回值是`AuthHandler`，而我们在Handler定义中返回的类型应该是一个`Handler<RoutingContext>`，实际上`AuthHandler`就是一个`Handler<RoutingContext>`的子接口：
+
+```java
+public interface AuthHandler extends Handler<RoutingContext> {
+    @Fluent
+    AuthHandler addAuthority(String var1);
+
+    @Fluent
+    AuthHandler addAuthorities(Set<String> var1);
+
+    void parseCredentials(RoutingContext var1, Handler<AsyncResult<JsonObject>> var2);
+
+    void authorize(User var1, Handler<AsyncResult<Void>> var2);
+}
+```
+
 
 
