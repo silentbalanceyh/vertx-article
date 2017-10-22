@@ -88,3 +88,43 @@ Metadata meta = new Metadata();
 
 上边代码是执行`Metadata`对象的isSecure方法，位于lambda表达式内部，它是在请求触发时被调用——在Vert.x的Verticle组件执行deploy过程中，这段代码并不会执行（不仅这段，Handler内部代码都不会被执行），理解透这两个生命周期过后，就可以对上边代码进行改写了。
 
+_（2）使用Handler分离定义_
+
+将上述代码改写成下边这种模式：定义一个额外的类，`MetaHandler`用来创建Handler，并将`Metadata`对象的引用传给它。
+
+主代码：
+
+```java
+Metadata meta = new Metadata();
+router.route("/api/*").handler(MetaHandler.create(meta));
+```
+
+Handler定义代码
+
+```java
+public class MetaHandler implements Handler<RoutingContext>{
+    // 创建Handler的静态方法
+    public static Handler<RoutingContext> create(final Metadata meta){
+        return new MetaHandler(meta);
+    }
+    // 成员变量Metadata的对象引用
+    private transient final Metadata reference;
+    private MetaHandler(final Metadata reference){
+        this.reference = reference;
+    }
+    @Override
+    public void handle(final RoutingContext context){
+        // 执行固定逻辑
+        boolean isSecure = this.reference.isSecure();
+        if(isSecure){
+            // 执行额外逻辑
+            // ......
+        }else{
+            context.next();
+        }
+    }
+}
+```
+
+
+
