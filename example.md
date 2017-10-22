@@ -2,6 +2,9 @@
 
 ```java
     public void handle(RoutingContext ctx) {
+        /**
+         * 跨域访问中首次请求OPTIONS方法的判断逻辑
+         **/
         if (!this.handlePreflight(ctx)) {
             User user = ctx.user();
             if (user != null) {
