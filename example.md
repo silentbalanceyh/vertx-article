@@ -31,7 +31,7 @@
                         // 解析失败，直接报错
                         this.processException(ctx, res.cause());
                     } else {
-                        // 解析成功，执行二次逻辑
+                        // 解析成功，执行二次逻辑，判断Session中是否有当前用户
                         User updatedUser = ctx.user();
                         if (updatedUser != null) {
                             Session session = ctx.session();
