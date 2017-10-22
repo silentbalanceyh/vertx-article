@@ -127,5 +127,9 @@ public class MetaHandler implements Handler<RoutingContext>{
 }
 ```
 
+_（3）总结_
+
+看看上边从读者最熟悉的lambda写法到Handler定义的改写，是不是就很清楚了下边这段代码的作用了：
+
 
 
