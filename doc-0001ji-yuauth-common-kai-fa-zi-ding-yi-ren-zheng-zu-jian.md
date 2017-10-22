@@ -129,5 +129,7 @@ public class MetaHandler implements Handler<RoutingContext>{
 
 看看上边从读者最熟悉的lambda写法到Handler定义的改写，是不是就很清楚了`BasicAuthHandler`那段代码的作用了，它和第二种的主代码逻辑是一致的。
 
+### 2.2. BasicAuthHandler背后的逻辑
+
 
 
