@@ -39,6 +39,9 @@
                             // 当前用户已经登陆过了，直接使用Session中的User对象执行验证
                             this.authorizeUser(ctx, updatedUser);
                         } else {
+                            /**
+                             * 从上述代码逻辑可以知道，直到主流程运行到这个位置，
+                             **/
                             this.getAuthProvider(ctx).authenticate((JsonObject)res.result(), (authN) -> {
                                 if (authN.succeeded()) {
                                     User authenticated = (User)authN.result();
