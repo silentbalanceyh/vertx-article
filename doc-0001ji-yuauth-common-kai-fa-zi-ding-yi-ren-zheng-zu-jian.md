@@ -58,5 +58,7 @@ router.route("/private/somepath").handler(routingContext -> {
 
 本节主要对这两种写法进行剖析，最终使用哪种根据读者自己遇到的场景来定。先看一个改写的例子：
 
+_（1）直接使用lambda表达式：_
+
 
 
