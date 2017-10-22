@@ -5,6 +5,7 @@
 * 重新定义了Token接口，解析流程参考了上边的parseCredentials方法；
 * 启用了OSGI插件模型，将所有的认证授权部分全部放到插件中去完成；
 * 参考Provider/User/Handler这几个结构，定义了新的CommonToken的基础模型来完成认证授权的重新定义；
+* 强化授权流程，连接自己的RBAC模型实现授权管理；
 
 
 
