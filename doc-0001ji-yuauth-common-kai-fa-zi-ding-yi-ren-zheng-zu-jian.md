@@ -174,5 +174,3 @@ MetaHandler handler = MetaHandler.create(meta);
 
 实际上上述两段代码最终都做了同样的事情，就是创建`Handler<RoutingContext>`对象，只有该对象会被Router识别，目前还没有进入实现部分，在我们的代码中，简单利用了`MetaHandler`处理了实现，而Vert.x中的`BasicAuthHandler`实现则是通过`BasicAuthHandlerImpl`类来完成的。
 
-
-
