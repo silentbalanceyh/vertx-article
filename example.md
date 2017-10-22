@@ -11,6 +11,7 @@
 public interface AuthProvider {
   void authenticate(JsonObject authInfo, Handler<AsyncResult<User>> resultHandler);
 }
+
 // io.vertx.ext.auth.User
 @VertxGen
 public interface User {
