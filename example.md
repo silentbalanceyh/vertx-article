@@ -3,7 +3,5 @@
 * `Provider`：主要方法为`authenticate`方法，负责认证。
 * `User`：主要方法为`isAuthorised`方法，负责授权。
 
-
-
-
+至于Vert.x本身已经考虑了权限缓存，
 
