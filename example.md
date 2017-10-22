@@ -55,7 +55,7 @@
                              * }
                              * 这也是官方教程中提到Basic的数据格式的原因，需要再提到的一点就是Provider接口会将一个
                              * JsonObject类型的对象转换成User被认证的实体对象，所以最终从authenticate第二参数返回
-                             * 的数据类型就是User
+                             * 的数据类型就是User。
                              **/
                             this.getAuthProvider(ctx).authenticate((JsonObject)res.result(), (authN) -> {
                                 if (authN.succeeded()) {
