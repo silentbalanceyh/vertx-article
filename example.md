@@ -21,7 +21,15 @@ public class MetaHandler implements Handler<RoutingContext>{
         this.reference = reference;
     }
     @Override
-    public void handle(final RoutingContext event){
+    public void handle(final RoutingContext context){
+        // 执行固定逻辑
+        boolean isSecure = this.reference.isSecure();
+        if(isSecure){
+            // 执行额外逻辑
+            // ......
+        }else{
+            context.next();
+        }
     }
 }
 ```
