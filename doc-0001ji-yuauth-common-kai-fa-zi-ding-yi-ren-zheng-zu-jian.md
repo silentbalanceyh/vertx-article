@@ -40,12 +40,21 @@ router.route("/private/*").handler(basicAuthHandler);
 
 **关于Handler的写法的思考**
 
-由于Vert.x中的在Router处理Handler的过程中通常示例都是使用的lambda表达式的写法，很容易养成了一种固定写法的习惯，那么在了解`BasicAuthHandler`之前先看看Handler的两种写法，实际上内置的很多Handler使用的并不是lambda表达式的写法，而是直接定义，如：
+由于Vert.x中的在Router处理Handler的过程中通常示例都是使用的lambda表达式的写法，很容易养成了一种固定写法的习惯，那么在了解`BasicAuthHandler`之前先看看Handler的两种写法，Vert.x内置的很多Handler使用的并不是lambda表达式的写法，而是直接定义，如：
 
 ```java
 router.route().handler(CookieHandler.create());
 router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
 ```
 
+初学者有时候会好奇，它和下边的写法的区别在什么地方：
 
+```java
+router.route("/private/somepath").handler(routingContext -> {
+  // This will have the value true
+  boolean isAuthenticated = routingContext.user() != null;
+});
+```
+
+从本质上来说，无区别，只是使用了两种不同的方式去实现逻辑，而开发人员需要学会自定义Handler，这种做法在实际开发过程中也很常用。
 
