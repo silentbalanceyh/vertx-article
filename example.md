@@ -19,7 +19,7 @@
                 this.authorizeUser(ctx, user);
             } else {
                 /**
-                 * 无法读取User信息，直接解析Http的头：Authorization，一般是第一次请求。
+                 * 无法读取User信息，直接解析Http的头：Authorization，一般是第一次请求时调用
                  * 注意：parseCredentials方法是定义于AuthHandler中的，主要用于解析Header的值
                  * 它的格式一般是：Authorization: Type XXXXXX，这里的Type只能是下边的值：
                  * Basic, Digest, Bearer, HOBA, Mutual, Negotiate, OAuth, SCRAM-SHA-1, SCRAM-SHA-256
