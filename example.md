@@ -4,7 +4,10 @@
     public void handle(RoutingContext ctx) {
         /**
          * 跨域访问中首次请求OPTIONS方法的判断逻辑，如果是OPTIONS则需要检查是否发送了请求头：
-         * Access-Control-Request-Headers
+         * Access-Control-Request-Headers，如果包含了该请求头，那么需要检查对应的值中是否
+         * 包含了认证需要的Authorization头信息。
+         * 跳过条件：请求方法不是OPTIONS，或者OPTIONS中没有包含Authorization则直接跳过。
+         * 这个if判断描述了当前认证流程的入口条件。
          **/
         if (!this.handlePreflight(ctx)) {
             User user = ctx.user();
