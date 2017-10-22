@@ -13,7 +13,13 @@ Handler定义代码
 
 ```java
 public class MetaHandler implements Handler<RoutingContext>{
-    
+    public static Handler<RoutingContext> create(final Metadata meta){
+        return new MetaHandler(meta);
+    }
+    private transient final Metadata reference;
+    private MetaHandler(final Metadata reference){
+        this.reference = reference;
+    }
     @Override
     public void handle(final RoutingContext event){
     }
