@@ -13,7 +13,7 @@
              **/
             User user = ctx.user();
             if (user != null) {
-                // 授权方法：不解析请求头，直接从RoutingContext中拿到用户User执行授权
+                // 授权：不解析请求头，直接从RoutingContext中拿到用户User执行授权
                 this.authorizeUser(ctx, user);
             } else {
                 /**
@@ -36,7 +36,7 @@
                             if (session != null) {
                                 session.regenerateId();
                             }
-                            // 授权方法：当前用户已经登陆过了，直接使用Session中的User对象执行授权
+                            // 授权：当前用户已经登陆过了，直接使用Session中的User对象执行授权
                             this.authorizeUser(ctx, updatedUser);
                         } else {
                             /**
@@ -61,7 +61,7 @@
                                 if (authN.succeeded()) {
                                     /**
                                      * 认证成功时，通过Provider获取认证的User对象，并将用户存储到Context中，
-                                     * 并且根据认证基础信息创建
+                                     * 并且根据认证基础信息创建会话
                                      **/
                                     User authenticated = (User)authN.result();
                                     ctx.setUser(authenticated);
@@ -69,7 +69,7 @@
                                     if (session != null) {
                                         session.regenerateId();
                                     }
-
+                                    // 授权：认证成功，基础环境设置完成，执行授权流程
                                     this.authorizeUser(ctx, authenticated);
                                 } else {
                                     /**
