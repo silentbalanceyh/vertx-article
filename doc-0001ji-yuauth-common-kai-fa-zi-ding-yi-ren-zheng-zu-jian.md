@@ -38,7 +38,7 @@ router.route("/private/*").handler(basicAuthHandler);
 * `io.vertx.ext.auth.AuthProvider`：认证专用接口。
 * `io.vertx.ext.auth.AbstractUser`：实现了User接口的抽象类，抽象类的主体逻辑实现了简单的权限缓存和基本权限处理。
 
-**关于Handler的写法的思考**
+### 2.1. `BasicAuthHandler`做了什么？
 
 由于Vert.x中的在Router处理Handler的过程中通常示例都是使用的lambda表达式的写法，很容易养成了一种固定写法的习惯，那么在了解`BasicAuthHandler`之前先看看Handler的两种写法，Vert.x内置的很多Handler使用的并不是lambda表达式的写法，而是直接定义，如：
 
