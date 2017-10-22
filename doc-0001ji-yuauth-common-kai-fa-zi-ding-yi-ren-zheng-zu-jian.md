@@ -21,7 +21,7 @@
 
 本文不详细介绍该模型，细节参考：[https://en.wikipedia.org/wiki/Role-based\_access\_control](https://en.wikipedia.org/wiki/Role-based_access_control)，而本文主要对Vert.x中的认证授权部分进行详细介绍，尽可能分享在实际项目中用来处理认证授权部分的内容，官方地址：[http://vertx.io/docs/\#authentication\_and\_authorisation](http://vertx.io/docs/#authentication_and_authorisation)。
 
-## 2. vertx-auth-common
+## 2. 深入vertx-auth-common
 
 Vert.x中主要包含了七个项目来处理认证授权的任务，vertx-auth-common是Vert.x中认证和授权的接口定义。在分析该项目之前，看看官方项目中Vert.x Web如何设置认证专用Handler的。
 
@@ -129,7 +129,7 @@ public class MetaHandler implements Handler<RoutingContext>{
 
 看看上边从读者最熟悉的lambda写法到Handler定义的改写，是不是就很清楚了`BasicAuthHandler`那段代码的作用了，它和第二种的主代码逻辑是一致的。
 
-### 2.2. BasicAuthHandler背后的逻辑
+### 2.2. `BasicAuthHandler`背后的逻辑
 
 
 
