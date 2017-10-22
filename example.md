@@ -40,7 +40,20 @@
                             this.authorizeUser(ctx, updatedUser);
                         } else {
                             /**
-                             * 从上述代码逻辑可以知道，直到主流程运行到这个位置，
+                             * 从上述代码逻辑可以知道，直到主流程运行到这个位置，代码才真正到达Provider中的，而这里就
+                             * 会调用getAuthProvider方法，从当前系统中读取已定义过的Provider，并且调用provider的
+                             * 主逻辑authenticate方法。那么读者也许比较困惑的是res.result()返回的应该是什么，这里
+                             * 返回的内容实际上是由上层调用parseCredentials来决定的，一般是一个JsonObject对象，但
+                             * 具体数据由不同的Handler实现来决定，比如Basic类型的最后一行为：
+                             * handler.handle(Future.succeededFuture(
+                             *     (new JsonObject()).put("username", suser).put("password", spass))
+                             * )
+                             * 那么它返回的就是一个JsonObject对象，形如：
+                             * {
+                             *     "username":"xxxx"
+                             *     "password":"xxxx"
+                             * }
+                             * 这也是官方教程中提到Basic的数据格式的原因。
                              **/
                             this.getAuthProvider(ctx).authenticate((JsonObject)res.result(), (authN) -> {
                                 if (authN.succeeded()) {
