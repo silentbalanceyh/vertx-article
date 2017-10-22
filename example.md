@@ -30,7 +30,13 @@ public interface AuthHandler extends Handler<RoutingContext> {
 }
 ```
 
-分析最初的代码：
+分析最初的代码和我们自己定义Handler部分的代码：
+
+```java
+AuthHandler basicAuthHandler = BasicAuthHandler.create(authProvider);
+// 我们自己的定义
+
+```
 
 
 

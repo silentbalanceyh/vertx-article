@@ -96,8 +96,9 @@ _（2）使用Handler定义_
 
 ```java
 Metadata meta = new Metadata();
+MetaHandler handler = MetaHandler.create(meta);
 
-router.route("/api/*").handler(MetaHandler.create(meta));
+router.route("/api/*").handler(handler);
 ```
 
 Handler定义代码
