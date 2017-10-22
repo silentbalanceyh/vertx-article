@@ -13,9 +13,11 @@ Handler定义代码
 
 ```java
 public class MetaHandler implements Handler<RoutingContext>{
+    // 创建Handler的静态方法
     public static Handler<RoutingContext> create(final Metadata meta){
         return new MetaHandler(meta);
     }
+    // 成员变量Metadata的对象引用
     private transient final Metadata reference;
     private MetaHandler(final Metadata reference){
         this.reference = reference;
