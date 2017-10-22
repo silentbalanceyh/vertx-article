@@ -13,6 +13,9 @@
              **/
             User user = ctx.user();
             if (user != null) {
+                /**
+                 * 不解析请求头，直接从RoutingContext中拿到用户User执行认证
+                 **/
                 this.authorizeUser(ctx, user);
             } else {
                 this.parseCredentials(ctx, (res) -> {
