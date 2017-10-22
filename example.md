@@ -9,5 +9,5 @@
 [Digest认证]：Authorization: Digest realm="xxx", qop="auth", nonce="xxxx", opque="xxxx"
 ```
 
-
+也就是说实现自定义的认证授权逻辑最简单的方式就是开发两个核心类，一个是AuthProvider（前文中提到的Provider），一个是User（实际上User的实现可以直接从AbstractUser继承，后边文章中会提到AbstractUser中的核心信息）。
 
