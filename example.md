@@ -68,6 +68,11 @@
 
                                     this.authorizeUser(ctx, authenticated);
                                 } else {
+                                    /**
+                                     * authenticateHeader一般又是一个会被子类重写的方法，它用于设置认证不成功时
+                                     * 在响应中提供WWW-Authenticate的头信息，对于Basic而言一般是Basic realm=xxx
+                                     * 格式。
+                                     **/
                                     String header = this.authenticateHeader(ctx);
                                     if (header != null) {
                                         ctx.response().putHeader("WWW-Authenticate", header);
