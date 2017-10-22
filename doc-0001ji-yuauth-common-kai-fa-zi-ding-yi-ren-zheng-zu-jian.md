@@ -56,5 +56,5 @@ router.route("/private/somepath").handler(routingContext -> {
 });
 ```
 
-从本质上来说，无区别，只是使用了两种不同的方式去实现逻辑，而开发人员需要学会自定义Handler，这种做法在实际开发过程中也很常用。
+从本质上来说，无区别，那么两种写法各自的好处在什么地方呢？
 
