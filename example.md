@@ -3,7 +3,8 @@
 ```java
     public void handle(RoutingContext ctx) {
         /**
-         * 跨域访问中首次请求OPTIONS方法的判断逻辑
+         * 跨域访问中首次请求OPTIONS方法的判断逻辑，如果是OPTIONS则需要检查是否发送了请求头：
+         * Access-Control-Request-Headers
          **/
         if (!this.handlePreflight(ctx)) {
             User user = ctx.user();
