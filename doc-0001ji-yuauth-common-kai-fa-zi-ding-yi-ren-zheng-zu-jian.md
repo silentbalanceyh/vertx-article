@@ -187,5 +187,5 @@ AuthHandlerImpl implements AuthHandler{
 }
 ```
 
- 也就是说，真正在执行请求时候调用的是`AuthHandlerImpl`中的`handle(RoutingContext)`方法，那么到这里，请求怎么来的，相信读者就能够理解了。
+ 也就是说，真正在执行认证请求时候调用的是`AuthHandlerImpl`中的`handle(RoutingContext)`方法，那么到这里，请求怎么来的，相信读者就能够理解了。
 
