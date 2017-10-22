@@ -13,7 +13,7 @@
              **/
             User user = ctx.user();
             if (user != null) {
-                // 不解析请求头，直接从RoutingContext中拿到用户User执行认证
+                // 授权方法：不解析请求头，直接从RoutingContext中拿到用户User执行授权
                 this.authorizeUser(ctx, user);
             } else {
                 /**
@@ -36,7 +36,7 @@
                             if (session != null) {
                                 session.regenerateId();
                             }
-                            // 当前用户已经登陆过了，直接使用Session中的User对象执行验证
+                            // 授权方法：当前用户已经登陆过了，直接使用Session中的User对象执行授权
                             this.authorizeUser(ctx, updatedUser);
                         } else {
                             /**
@@ -59,6 +59,10 @@
                              **/
                             this.getAuthProvider(ctx).authenticate((JsonObject)res.result(), (authN) -> {
                                 if (authN.succeeded()) {
+                                    /**
+                                     * 认证成功时，通过Provider获取认证的User对象，并将用户存储到Context中，
+                                     * 并且根据认证基础信息创建
+                                     **/
                                     User authenticated = (User)authN.result();
                                     ctx.setUser(authenticated);
                                     Session session = ctx.session();
