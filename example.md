@@ -9,5 +9,16 @@ Metadata meta = new Metadata();
 router.route("/api/*").handler(MetaHandler.create(meta));
 ```
 
+Handler定义代码
+
+```java
+public class MetaHandler implements Handler<RoutingContext>{
+    
+    @Override
+    public void handle(final RoutingContext event){
+    }
+}
+```
+
 
 
