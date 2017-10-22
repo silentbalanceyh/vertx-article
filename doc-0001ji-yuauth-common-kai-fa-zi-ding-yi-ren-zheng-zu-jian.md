@@ -56,7 +56,7 @@ router.route("/private/somepath").handler(routingContext -> {
 });
 ```
 
-从本质上来说，无区别，那么两种写法各自的好处在什么地方呢？
+本节主要对这两种写法进行剖析，最终使用哪种根据读者自己遇到的场景来定。
 
 
 
