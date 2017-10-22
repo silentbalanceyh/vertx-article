@@ -13,9 +13,7 @@
              **/
             User user = ctx.user();
             if (user != null) {
-                /**
-                 * 不解析请求头，直接从RoutingContext中拿到用户User执行认证
-                 **/
+                // 不解析请求头，直接从RoutingContext中拿到用户User执行认证
                 this.authorizeUser(ctx, user);
             } else {
                 /**
@@ -38,7 +36,7 @@
                             if (session != null) {
                                 session.regenerateId();
                             }
-
+                            // 当前用户已经登陆过了，直接使用Session中的User对象执行验证
                             this.authorizeUser(ctx, updatedUser);
                         } else {
                             this.getAuthProvider(ctx).authenticate((JsonObject)res.result(), (authN) -> {
