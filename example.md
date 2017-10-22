@@ -16,15 +16,17 @@
 
 ```java
     public void authorize(User user, Handler<AsyncResult<Void>> handler) {
+        // 直接读取所需授权信息的数量（缓存过授权就会有该信息）
         int requiredcount = this.authorities.size();
         if (requiredcount > 0) {
+            // 如果读取不到用户，则抛出FORBIDDEN的403异常信息
             if (user == null) {
                 handler.handle(Future.failedFuture(FORBIDDEN));
                 return;
             }
-
             AtomicInteger count = new AtomicInteger();
             AtomicBoolean sentFailure = new AtomicBoolean();
+            // 执行一部授权检查
             Handler<AsyncResult<Boolean>> authHandler = (res) -> {
                 if (res.succeeded()) {
                     if (((Boolean)res.result()).booleanValue()) {
