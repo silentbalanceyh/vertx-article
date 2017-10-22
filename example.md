@@ -49,6 +49,7 @@
             while(var7.hasNext()) {
                 String authority = (String)var7.next();
                 if (!sentFailure.get()) {
+                    // 针对每个权限信息调用User引用中的isAuthorised方法
                     user.isAuthorised(authority, authHandler);
                 }
             }
