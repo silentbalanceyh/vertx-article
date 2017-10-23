@@ -7,9 +7,7 @@
 * 参考Provider/User/Handler这几个结构，定义了新的CommonToken的基础模型来完成认证授权的重新定义；
 * 强化授权流程，连接自己的RBAC模型实现授权管理；
 
-## 3.1.分析AbstractUser
-
-
+### 3.1.分析AbstractUser
 
 
 
