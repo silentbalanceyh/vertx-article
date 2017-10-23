@@ -17,5 +17,29 @@ Vert.x默认提供的AbstractUser可以称为是被认证授权的实体，主�
 
 那么在实现自定义的认证授权框架时，先定义属于自己的User，这里分析我们自己使用的Basic认证，先定义几个核心属性：
 
+```java
+    /**
+     * User中需要使用的Provider对象引用
+     **/
+    @SuppressWarnings("unused")
+    private transient AuthProvider provider;
+    /**
+     * 用户名信息
+     **/
+    private transient String username;
+    /**
+     * 用户Id信息
+     **/
+    private transient String id;
+    /**
+     * 用户的Password加密字符串
+     **/
+    private transient String password;
+    /**
+     * 用户授权信息
+     **/
+    private transient JsonObject principal;
+```
+
 
 
