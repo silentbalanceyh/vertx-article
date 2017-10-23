@@ -15,7 +15,7 @@ Vert.x默认提供的AbstractUser可以称为是被认证授权的实体，主�
 * 实现了doIsPermitted用于核心授权检查逻辑，和isAuthorized方法配合完成；
 * 实现了ClusterSerializable接口，用于在Vert.x的Cluster环境实现快速序列化和反序列化的操作；
 
-
+那么在实现自定义的认证授权框架时，先定义属于自己的User。
 
 
 
