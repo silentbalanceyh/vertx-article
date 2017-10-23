@@ -7,5 +7,379 @@
 * 参考Provider/User/Handler这几个结构，定义了新的CommonToken的基础模型来完成认证授权的重新定义；
 * 强化授权流程，连接自己的RBAC模型实现授权管理；
 
+## 2. 深入Vert.x认证授权
 
+Vert.x中主要包含了七个项目来处理认证授权的任务，vertx-auth-common是Vert.x中认证和授权的接口定义，先看看官方项目中Vert.x Web如何设置Basic认证专用Handler的。
+
+```java
+AuthHandler basicAuthHandler = BasicAuthHandler.create(authProvider);
+
+// All requests to paths starting with '/private/' will be protected
+router.route("/private/*").handler(basicAuthHandler);
+```
+
+如果上述代码第一次出现在你眼前，可能对于初学者有点不容易理解，那么本章节的目的就是解决初学者在Vert.x认证和授权过程中的困惑。Vert.x中对于认证和授权部分定义了几个核心接口，这些接口可以让开发人员创建属于自己的认证、授权逻辑。上述代码段中，使用`BasicAuthHandler`去创建了一个Handler组件，通过它创建的Handler组件和通常我们使用lambda表达式直接写的组件区别就在于引入了认证过程中的Provider接口，所以在路由内的代码执行流程中，Provider实现组件的逻辑会被触发，而Provider实现组件的逻辑就是开发人员需要真正关注的地方。vertx-auth-common中的几个核心接口（包括抽象类）如下：
+
+* `io.vertx.ext.auth.User`：被认证的实体，包含了认证授权中该实体包含的所有数据信息。
+* `io.vertx.ext.auth.AuthProvider`：认证专用接口。
+* `io.vertx.ext.auth.AbstractUser`：实现了User接口的抽象类，抽象类的主体逻辑实现了简单的权限缓存和基本权限处理。
+
+### 2.1. `BasicAuthHandler`做了什么？
+
+由于Vert.x中的在Router处理Handler的过程中通常示例都是使用的lambda表达式的写法，很容易养成了一种固定写法的习惯，那么在了解`BasicAuthHandler`之前先看看Handler的两种写法，Vert.x内置的很多Handler使用的并不是lambda表达式的写法，而是直接定义，如：
+
+```java
+router.route().handler(CookieHandler.create());
+router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
+```
+
+初学者有时候会好奇，它和下边的写法的区别在什么地方：
+
+```java
+router.route("/private/somepath").handler(routingContext -> {
+  // This will have the value true
+  boolean isAuthenticated = routingContext.user() != null;
+});
+```
+
+本节主要对这两种写法进行剖析，最终使用哪种根据读者自己遇到的场景来定。先看一个改写的例子：
+
+_（1）直接使用lambda表达式：_
+
+```java
+Metadata meta = new Metadata();
+router.route("/api/*").handler(context -> {
+    // 执行固定逻辑
+    boolean isSecure = meta.isSecure();
+    if(isSecure){
+        // 执行额外逻辑
+        // ......
+    }else{
+        context.next();
+    }
+});
+```
+
+上述代码实际上是一段伪代码，但它表示这样一段逻辑：在启动时，构造一个`Metadata`对象（称为元数据对象），并设置路由；在执行请求时，会调用meta的`isSecure`方法，它的返回结果会影响请求的执行流程。实际上代码主体和lambda本身的逻辑在Vert.x并**不是同时执行**的。
+
+```java
+Metadata meta = new Metadata();
+```
+
+上边是构造了Metadata对象，它是在Vert.x中Verticle组件start方法调用时被调用，也就是deploy阶段。
+
+```java
+    boolean isSecure = meta.isSecure();
+```
+
+上边代码是执行`Metadata`对象的isSecure方法，位于lambda表达式内部，它是在请求触发时被调用——在Vert.x的Verticle组件执行deploy过程中，这段代码并不会执行（不仅这段，Handler内部代码都不会被执行），理解透这两个生命周期过后，就可以对上边代码进行改写了。
+
+_（2）使用Handler定义_
+
+将（1）代码改写成下边这种模式：定义一个额外的类，`MetaHandler`用来创建Handler，并将`Metadata`对象的引用传给它。
+
+主代码：
+
+```java
+Metadata meta = new Metadata();
+MetaHandler handler = MetaHandler.create(meta);
+
+router.route("/api/*").handler(handler);
+```
+
+Handler定义代码
+
+```java
+public class MetaHandler implements Handler<RoutingContext>{
+    // 创建Handler的静态方法
+    public static Handler<RoutingContext> create(final Metadata meta){
+        return new MetaHandler(meta);
+    }
+    // 成员变量Metadata的对象引用
+    private transient final Metadata reference;
+    private MetaHandler(final Metadata reference){
+        this.reference = reference;
+    }
+    @Override
+    public void handle(final RoutingContext context){
+        // 执行固定逻辑
+        boolean isSecure = this.reference.isSecure();
+        if(isSecure){
+            // 执行额外逻辑
+            // ......
+        }else{
+            context.next();
+        }
+    }
+}
+```
+
+看看上边从读者最熟悉的lambda写法到Handler定义的改写，是不是就很清楚了`BasicAuthHandler`那段代码的作用了，它和第二种的主代码逻辑是一致的。
+
+### 2.2. `BasicAuthHandler`背后的结构
+
+Vert.x中的`BasicAuthHandler`远比上边的Handler定义部分复杂，接下来部分的内容对于实现自定义的认证授权很有帮助，但由于是分析Vert.x中的源代码，难免有些觉得枯燥。Vert.x中的`BasicAuthHandler`的代码定义如下：
+
+```java
+public interface BasicAuthHandler extends AuthHandler {
+    String DEFAULT_REALM = "vertx-web";
+
+    static AuthHandler create(AuthProvider authProvider) {
+        return new BasicAuthHandlerImpl(authProvider, "vertx-web");
+    }
+
+    static AuthHandler create(AuthProvider authProvider, String realm) {
+        return new BasicAuthHandlerImpl(authProvider, realm);
+    }
+}
+```
+
+实际上在调用`BasicAuthHandler`的create方法时，返回值是`AuthHandler`，而我们在Handler定义中返回的类型应该是一个`Handler<RoutingContext>`，实际上`AuthHandler`就是一个`Handler<RoutingContext>`的子接口：
+
+```java
+public interface AuthHandler extends Handler<RoutingContext> {
+    @Fluent
+    AuthHandler addAuthority(String var1);
+
+    @Fluent
+    AuthHandler addAuthorities(Set<String> var1);
+
+    void parseCredentials(RoutingContext var1, Handler<AsyncResult<JsonObject>> var2);
+
+    void authorize(User var1, Handler<AsyncResult<Void>> var2);
+}
+```
+
+分析最初的代码和我们自己定义Handler部分的代码：
+
+```java
+AuthHandler basicAuthHandler = BasicAuthHandler.create(authProvider);
+// 自己的定义
+MetaHandler handler = MetaHandler.create(meta);
+```
+
+实际上上述两段代码最终都做了同样的事情，就是创建`Handler<RoutingContext>`对象，只有该对象会被Router识别，目前还没有进入实现部分，在我们的代码中，简单利用了`MetaHandler`处理了实现，而Vert.x中的`BasicAuthHandler`实现则是通过`BasicAuthHandlerImpl`类来完成的。从我们定义的Handler部分可以发现实现部分的代码是请求流程执行时触发的，它的主逻辑在于调用`handle(RoutingContext)`方法，上述代码的实现类`BasicAuthHandlerImpl`中似乎找不到？实际上Vert.x为了满足各种认证授权需求，进行了很细粒度的设计，它的整个继承树结构如：
+
+```java
+BasicAuthHandlerImpl extends AuthorizationAuthHandler {}
+
+AuthorizationAuthHandler extends AuthHandlerImpl{}
+
+AuthHandlerImpl implements AuthHandler{
+    // ......
+    public void handle(RoutingContext ctx){
+        // 请求主代码逻辑
+    }
+}
+```
+
+ 也就是说，真正在执行认证请求时候调用的是`AuthHandlerImpl`中的`handle(RoutingContext)`方法，那么到这里，请求怎么来的，相信读者就能够理解了。
+
+### 2.3. `BasicAuthHandler`背后的逻辑
+
+既然已经找到了请求执行的入口，那么从入口开始分析BasicAuthHandlerImpl，让大家对整个请求流程有更加清晰的了解。为什么要分析？如果仅仅是针对开发人员，在处理过程开发自定义的`User`和`Provider`足够完成任务，了解清楚这部分内容的目的是方便大家“调试”，我们可以知道Vert.x究竟帮我们完成了什么事，这样从内到外抽丝剥茧，我们才知道我们开发的Provider和User最终是在整个认证授权框架的什么位置，以及如果我们要开发自定义的独立认证授权流程时从什么位置入手最符合我们实际项目的需要。先看下边的核心代码（方便大家理解，带上注释）
+
+**认证部分**
+
+```java
+    public void handle(RoutingContext ctx) {
+        /**
+         * 跨域访问中首次请求OPTIONS方法的判断逻辑，如果是OPTIONS则需要检查是否发送了请求头：
+         * Access-Control-Request-Headers，如果包含了该请求头，那么需要检查对应的值中是否
+         * 包含了认证需要的Authorization头信息，这个if判断描述了当前认证流程的入口条件。
+         **/
+        if (!this.handlePreflight(ctx)) {
+            /**
+             * 从RoutingContext中读取User对象
+             **/
+            User user = ctx.user();
+            if (user != null) {
+                // 授权：不解析请求头，直接从RoutingContext中拿到用户User执行授权
+                this.authorizeUser(ctx, user);
+            } else {
+                /**
+                 * 无法读取User信息，直接解析Http的头：Authorization，一般是第一次请求时调用
+                 * 注意：parseCredentials方法是定义于AuthHandler中的
+                 * 被解析的值格式一般是：Authorization: Type XXXXXX，这里的Type只能是下边的值：
+                 * Basic, Digest, Bearer, HOBA, Mutual, Negotiate, OAuth, SCRAM-SHA-1, SCRAM-SHA-256
+                 * 一般这个方法会被重写，不同类型的值解析逻辑会不同，BasicAuthHandlerImpl中的
+                 * parseCredentials方法就被重写过，主要用于解析Basic中的头信息。
+                 **/
+                this.parseCredentials(ctx, (res) -> {
+                    if (res.failed()) {
+                        // 解析失败，直接报错
+                        this.processException(ctx, res.cause());
+                    } else {
+                        // 解析成功，执行二次逻辑，判断Session中是否有当前用户
+                        User updatedUser = ctx.user();
+                        if (updatedUser != null) {
+                            Session session = ctx.session();
+                            if (session != null) {
+                                session.regenerateId();
+                            }
+                            // 授权：当前用户已经登陆过了，直接使用Session中的User对象执行授权
+                            this.authorizeUser(ctx, updatedUser);
+                        } else {
+                            /**
+                             * 从上述代码逻辑可以知道，直到主流程运行到这个位置，代码才真正到达Provider中的，而这里就
+                             * 会调用getAuthProvider方法，从当前系统中读取已定义过的Provider，并且调用provider的
+                             * 主逻辑authenticate方法。那么读者也许比较困惑的是res.result()返回的应该是什么，这里
+                             * 返回的内容实际上是由上层调用parseCredentials来决定的，一般是一个JsonObject对象，但
+                             * 具体数据由不同的Handler实现来决定，比如Basic类型的最后一行为：
+                             * handler.handle(Future.succeededFuture(
+                             *     (new JsonObject()).put("username", suser).put("password", spass))
+                             * )
+                             * 那么它返回的就是一个JsonObject对象，形如：
+                             * {
+                             *     "username":"xxxx"
+                             *     "password":"xxxx"
+                             * }
+                             * 这也是官方教程中提到Basic的数据格式的原因，需要再提到的一点就是Provider接口会将一个
+                             * JsonObject类型的对象转换成User被认证的实体对象，所以最终从authenticate第二参数返回
+                             * 的数据类型就是User。
+                             **/
+                            this.getAuthProvider(ctx).authenticate((JsonObject)res.result(), (authN) -> {
+                                if (authN.succeeded()) {
+                                    /**
+                                     * 认证成功时，通过Provider获取认证的User对象，并将用户存储到Context中，
+                                     * 并且根据认证基础信息创建会话
+                                     **/
+                                    User authenticated = (User)authN.result();
+                                    ctx.setUser(authenticated);
+                                    Session session = ctx.session();
+                                    if (session != null) {
+                                        session.regenerateId();
+                                    }
+                                    // 授权：认证成功，基础环境设置完成，执行授权流程
+                                    this.authorizeUser(ctx, authenticated);
+                                } else {
+                                    /**
+                                     * authenticateHeader一般又是一个会被子类重写的方法，它用于设置认证不成功时
+                                     * 在响应中提供WWW-Authenticate的头信息，对于Basic而言一般是Basic realm=xxx
+                                     * 格式。
+                                     **/
+                                    String header = this.authenticateHeader(ctx);
+                                    if (header != null) {
+                                        ctx.response().putHeader("WWW-Authenticate", header);
+                                    }
+
+                                    ctx.fail(401);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        }
+    }
+```
+
+**授权部分**（Vert.x中的权限模型比较简单）：
+
+上述代码段中三次访问到授权流程的代码，即代码中的方法`authorizeUser`，其实这个方法很简单，内容如下：
+
+```java
+    private void authorizeUser(RoutingContext ctx, User user) {
+        this.authorize(user, (authZ) -> {
+            if (authZ.failed()) {
+                this.processException(ctx, authZ.cause());
+            } else {
+                ctx.next();
+            }
+        });
+    }
+```
+
+从上述代码段可以知道，最终调用的方法是`authorize`：
+
+```java
+    public void authorize(User user, Handler<AsyncResult<Void>> handler) {
+        // 直接读取所需授权信息的数量（缓存过授权就会有该信息）
+        int requiredcount = this.authorities.size();
+        if (requiredcount > 0) {
+            // 如果读取不到用户，则抛出FORBIDDEN的403异常信息
+            if (user == null) {
+                handler.handle(Future.failedFuture(FORBIDDEN));
+                return;
+            }
+            AtomicInteger count = new AtomicInteger();
+            AtomicBoolean sentFailure = new AtomicBoolean();
+            // 执行一部授权检查，定义authHandler对象
+            Handler<AsyncResult<Boolean>> authHandler = (res) -> {
+                if (res.succeeded()) {
+                    if (((Boolean)res.result()).booleanValue()) {
+                        // 为空，则授权用户增加，使用AtomicInteger执行统计是因为多个线程共享，参考并发编程
+                        if (count.incrementAndGet() == requiredcount) {
+                            handler.handle(Future.succeededFuture());
+                        }
+                    } else if (sentFailure.compareAndSet(false, true)) {
+                        // 出现异常，则抛出403的FORBIDDEN异常
+                        handler.handle(Future.failedFuture(FORBIDDEN));
+                    }
+                } else {
+                    handler.handle(Future.failedFuture(res.cause()));
+                }
+
+            };
+            // 遍历每一个权限信息（authorities中存储了）
+            Iterator var7 = this.authorities.iterator();
+
+            while(var7.hasNext()) {
+                String authority = (String)var7.next();
+                if (!sentFailure.get()) {
+                    // 针对每个权限信息调用User引用中的isAuthorised方法
+                    user.isAuthorised(authority, authHandler);
+                }
+            }
+        } else {
+            handler.handle(Future.succeededFuture());
+        }
+
+    }
+```
+
+通过分析了认证和授权部分的源代码，就知道auth-common框架中的Provider和User的主方法在什么地方调用的：
+
+* `Provider`：主要方法为`authenticate`方法，负责认证。
+* `User`：主要方法为`isAuthorised`方法，负责授权。
+
+至于Vert.x本身已经考虑了权限缓存、跨域OPTIONS的首次访问、开启用户会话的Session、以及默认情况下的403的处理等，当然这些内容细节读者可以参考Vert.x本身的源代码，这部分最后看看这两个主类的源代码（注释就不提供了）：
+
+```java
+// io.vertx.ext.auth.AuthProvider
+@VertxGen
+public interface AuthProvider {
+  void authenticate(JsonObject authInfo, Handler<AsyncResult<User>> resultHandler);
+}
+
+// io.vertx.ext.auth.User
+@VertxGen
+public interface User {
+  @Fluent
+  User isAuthorized(String authority, Handler<AsyncResult<Boolean>> resultHandler);
+  @Deprecated
+  @Fluent
+  default User isAuthorised(String authority, Handler<AsyncResult<Boolean>> resultHandler) {
+    return isAuthorized(authority, resultHandler);
+  }
+  @Fluent
+  User clearCache();
+  JsonObject principal();
+  void setAuthProvider(AuthProvider authProvider);
+}
+```
+
+### 2.4.总结
+
+从源代码的分析看来，Vert.x中的认证和授权流程比较简单，而上边分析的BasicAuthHandler部分的内容是Vert.x Web项目的内容，并不是auth-common项目的内容，它们的整体结构图应该如下（仅红色和蓝色部分是连接auth-common的地方）：
+
+![](/assets/images/0001/01.png)仔细结合源代码分析上述结构图，实际上`BasicAuthHandler`和`BasicAuthHandlerImpl`这两个类是vert.x web项目提供的内容，所有和认证授权相关的Handler部分都在`io.vertx.ext.web.handler.impl`包中，如果你觉得下边的头信息需要按照自己的逻辑进行解析，就不需要重写这两部分内容，否则的话，你也可以做深度定制，把这两个类重写。
+
+```
+[Basic认证]：Authorization: Basic XXXXXXX
+[Digest认证]：Authorization: Digest realm="xxx", qop="auth", nonce="xxxx", opque="xxxx"
+```
+
+也就是说实现自定义的认证授权逻辑最简单的方式就是开发两个核心类，一个是AuthProvider（前文中提到的Provider），一个是User（实际上User的实现可以直接从AbstractUser继承，后边文章中会提到AbstractUser中的核心信息）。
 
