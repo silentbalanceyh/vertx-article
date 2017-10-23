@@ -41,5 +41,7 @@ Vert.x默认提供的AbstractUser可以称为是被认证授权的实体，主�
     private transient JsonObject principal;
 ```
 
+这里扩展了原生的username和password两个字段，添加了id（数据库代理主键）和JsonObject类型的principal，一般principal存储了一些附加的数据（比如当前用户的角色、基本权限、资源集合等，这个根据实际需要而有所不同）。
+
 
 
