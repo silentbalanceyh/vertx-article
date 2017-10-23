@@ -15,7 +15,7 @@ Vert.x默认提供的AbstractUser可以称为是被认证授权的实体，主�
 * 实现了doIsPermitted用于核心授权检查逻辑，和isAuthorized方法配合完成；
 * 实现了ClusterSerializable接口，用于在Vert.x的Cluster环境实现快速序列化和反序列化的操作；
 
-那么在实现自定义的认证授权框架时，先定义属于自己的User，这里分析我们自己使用的Basic认证，先定义几个核心属性：
+那么在实现自定义的认证授权框架时，先定义属于自己的User，这里分析我们自己使用的Basic认证BasicUser类，先定义几个核心属性：
 
 ```java
     /**
@@ -42,6 +42,4 @@ Vert.x默认提供的AbstractUser可以称为是被认证授权的实体，主�
 ```
 
 这里扩展了原生的username和password两个字段，添加了id（数据库代理主键）和JsonObject类型的principal，一般principal存储了一些附加的数据（比如当前用户的角色、基本权限、资源集合等，这个根据实际需要而有所不同）。
-
-
 
